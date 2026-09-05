@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     SQLITE_URL: str = "sqlite:///./problems.db"
     CHROMA_PERSIST_DIR: str = "./data/chroma"
+    IMPORT_SOURCE_DIR: str = "./data/imports"
 
     # Provider Selection: "ollama" | "openai"
     LLM_BACKEND: str = "ollama"

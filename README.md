@@ -28,6 +28,7 @@ Ingestion   Retrieval
 │   │   └── v1/
 │   │       ├── router.py
 │   │       ├── ingestion.py        # Trigger batch ingestion
+│       │       ├── problems.py         # Import problems from data/imports/
 │   │       └── search.py           # Problem search endpoints
 │   ├── core/
 │   │   ├── config.py               # Pydantic settings & env management
@@ -50,6 +51,7 @@ Ingestion   Retrieval
 │   │       └── chroma_store.py
 │   ├── services/
 │   │   ├── ingestion_service.py    # Ingestion worker logic
+│   │   ├── import_service.py       # Merge scraped SQLite DBs into catalog
 │   │   └── search_service.py       # Query processing & top-k matching
 │   └── main.py                     # FastAPI application factory
 ├── tests/
@@ -116,9 +118,29 @@ OPENAI_EMBED_MODEL=text-embedding-3-small
 uvicorn app.main:app --reload --port 8000
 ```
 
-1. **Populate SQLite**: An independent scraper inserts problems directly into `problems.db` with `status = 'PENDING'`.
-2. **Start the backend** as above.
-3. **Run the ingestion batch**:
+1. **Populate SQLite**: An independent scraper inserts problems into a **separately named** DB file (e.g. `new_problems.db`) with `status = 'PENDING'`. See [`PROBLEMS_DB_GUIDE.md`](./PROBLEMS_DB_GUIDE.md) for the exact schema.
+2. **Merge the scraped file into the catalog**:
+
+   Copy the scraped DB into the import directory `data/imports/`, then import
+   everything found there:
+
+   ```bash
+   curl -X POST "http://localhost:8000/api/v1/problems/import"
+   ```
+
+   To import a single file by name:
+
+   ```bash
+   curl -X POST "http://localhost:8000/api/v1/problems/import?filename=new_problems.db"
+   ```
+
+   Imported files are never modified or deleted. All rows are inserted into
+   `problems.db` keyed on the unique `url` column, so problems already present are
+   skipped and existing rows are **never overwritten or duplicated**. The response
+   reports, per file, the count of inserted / skipped-duplicate / invalid rows.
+
+3. **Start the backend** as above.
+4. **Run the ingestion batch**:
 
    ```bash
    curl -X POST "http://localhost:8000/api/v1/ingest/trigger?batch_size=100"
@@ -126,7 +148,7 @@ uvicorn app.main:app --reload --port 8000
 
    The backend pulls unindexed items, summarizes them, generates embeddings, stores them in the vector database, and marks them `COMPLETED`.
 
-4. **Search for similar problems**:
+5. **Search for similar problems**:
 
    ```bash
    curl -X POST "http://localhost:8000/api/v1/search" \

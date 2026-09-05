@@ -11,7 +11,14 @@ venv/
 # Databases & vector data
 *.db
 *.sqlite3
-data/
+# Data directories (runtime artifacts) — only empty placeholder files are tracked
+data/*
+!data/chroma/
+!data/imports/
+data/chroma/*
+data/imports/*
+!data/chroma/.gitkeep
+!data/imports/.gitkeep
 chroma_db/
 
 # Tooling
