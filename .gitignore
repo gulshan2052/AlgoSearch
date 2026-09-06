@@ -26,3 +26,5 @@ chroma_db/
 .mypy_cache/
 .ruff_cache/
 .coverage
+
+.idea
