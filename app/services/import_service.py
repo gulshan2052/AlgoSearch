@@ -58,14 +58,31 @@ class CatalogImportService:
         self.engine = engine
 
     def import_from_db(self, source_path: str) -> ImportReport:
+        logger.info("Importing source DB: %s", source_path)
         rows = self._read_source_rows(source_path)
+        logger.info("Source DB %s: read %d row(s)", source_path, len(rows))
 
         now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         valid_rows, skipped_invalid = self._validate_rows(rows, now)
+        logger.info(
+            "Source DB %s: %d valid, %d invalid rows",
+            source_path,
+            len(valid_rows),
+            skipped_invalid,
+        )
 
         inserted, skipped_duplicates = self._insert_rows(valid_rows)
 
         total_problems = self._count_problems()
+
+        logger.info(
+            "Source DB %s -> inserted=%d skipped_duplicates=%d skipped_invalid=%d total_problems=%d",
+            source_path,
+            inserted,
+            skipped_duplicates,
+            skipped_invalid,
+            total_problems,
+        )
 
         return ImportReport(
             source_rows=len(rows),
@@ -84,18 +101,32 @@ class CatalogImportService:
         so an invalid file is reported in its own result without blocking the rest.
         """
         import_paths = self._find_source_files(source_dir, filename)
+        logger.info(
+            "Starting import from directory %s: %d file(s) to process",
+            source_dir,
+            len(import_paths),
+        )
         results: list[FileImportResult] = []
         for path in import_paths:
             try:
+                logger.info("Importing file: %s", path.name)
                 report = self.import_from_db(str(path))
                 results.append(
                     FileImportResult(filename=path.name, report=report)
+                )
+                logger.info(
+                    "File %s imported (inserted=%d, duplicates=%d, invalid=%d)",
+                    path.name,
+                    report.inserted,
+                    report.skipped_duplicates,
+                    report.skipped_invalid,
                 )
             except Exception as exc:
                 logger.warning("Skipped import of %s: %s", path.name, exc)
                 results.append(
                     FileImportResult(filename=path.name, error=str(exc))
                 )
+        logger.info("Import finished: %d file(s) processed", len(results))
         return results
 
     @staticmethod
