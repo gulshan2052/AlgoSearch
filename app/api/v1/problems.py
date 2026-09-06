@@ -27,11 +27,13 @@ def import_problems(filename: str | None = None) -> list[FileImportResult]:
     modified or deleted.
     """
 
+    logger.info("Import request received (filename=%r)", filename)
     try:
         results = CatalogImportService(engine).import_from_dir(
             settings.IMPORT_SOURCE_DIR, filename=filename
         )
     except ImportValidationError as exc:
+        logger.warning("Import validation failed: %s", exc)
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:
         logger.exception("Failed to import problems")
@@ -39,5 +41,19 @@ def import_problems(filename: str | None = None) -> list[FileImportResult]:
             status_code=500,
             detail=f"Failed to import problems: {exc}",
         )
+
+    for result in results:
+        if result.error:
+            logger.warning("Import result for %s: error=%s", result.filename, result.error)
+        else:
+            r = result.report
+            logger.info(
+                "Import result for %s: inserted=%d duplicates=%d invalid=%d total=%d",
+                result.filename,
+                r.inserted,
+                r.skipped_duplicates,
+                r.skipped_invalid,
+                r.total_problems,
+            )
 
     return results

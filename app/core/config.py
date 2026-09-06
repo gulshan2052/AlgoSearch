@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     CHROMA_PERSIST_DIR: str = "./data/chroma"
     IMPORT_SOURCE_DIR: str = "./data/imports"
 
+    # Logging
+    LOG_LEVEL: str = "INFO"
+
     # Provider Selection: "ollama" | "openai"
     LLM_BACKEND: str = "ollama"
     EMBEDDING_BACKEND: str = "ollama"
