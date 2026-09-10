@@ -11,13 +11,15 @@ venv/
 # Databases & vector data
 *.db
 *.sqlite3
-# Data directories (runtime artifacts) — only empty placeholder files are tracked
+# Data directories — the catalog DB (problems.db) and Chroma vector store are
+# tracked; the imports drop-folder holds scratch files and is not.
 data/*
+!data/problems.db
 !data/chroma/
+!data/chroma/*
+!data/chroma/chroma.sqlite3
 !data/imports/
-data/chroma/*
 data/imports/*
-!data/chroma/.gitkeep
 !data/imports/.gitkeep
 chroma_db/
 
