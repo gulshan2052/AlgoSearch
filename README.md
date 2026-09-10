@@ -135,7 +135,7 @@ uvicorn app.main:app --reload --port 8000
    ```
 
    Imported files are never modified or deleted. All rows are inserted into
-   `problems.db` keyed on the unique `url` column, so problems already present are
+   `data/problems.db` keyed on the unique `url` column, so problems already present are
    skipped and existing rows are **never overwritten or duplicated**. The response
    reports, per file, the count of inserted / skipped-duplicate / invalid rows.
 
