@@ -47,7 +47,8 @@ class FileImportResult(BaseModel):
 
 
 class CatalogImportService:
-    """Merges rows from an externally scraped SQLite DB into the catalog's `problems.db`.
+    """Merges rows from an externally scraped SQLite DB into the catalog's
+    `data/problems.db`.
 
     The source is opened read-only. Rows are inserted into the target `problems`
     table keyed on the unique `url` column, so an already-present problem is never
