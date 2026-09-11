@@ -79,7 +79,7 @@ Swap providers by setting flags in `.env`:
 
 | Setting | Value | Purpose |
 |---|---|---|
-| `LLM_BACKEND` | `"ollama"` \| `"openai"` | Which LLM provider to use |
+| `LLM_BACKEND` | `"ollama"` \| `"openai"` \| `"gemini"` | Which LLM provider to use |
 | `EMBEDDING_BACKEND` | `"ollama"` \| `"openai"` | Which embedding provider to use |
 
 ### Ollama (default)
@@ -98,6 +98,16 @@ Pull the models first:
 ollama pull qwen2.5-coder
 ollama pull nomic-embed-text
 ```
+
+### Google Gemini
+
+```env
+LLM_BACKEND=gemini
+GEMINI_API_KEY=AIza...
+GEMINI_LLM_MODEL=gemini-2.5-flash
+```
+
+Set `EMBEDDING_BACKEND` to `"ollama"` or `"openai"` for embedding.
 
 ### OpenAI / Claude (via OpenAI-compatible gateway)
 

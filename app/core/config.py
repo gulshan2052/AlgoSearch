@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "INFO"
 
-    # Provider Selection: "ollama" | "openai"
+    # Provider Selection: "ollama" | "openai" | "gemini"
     LLM_BACKEND: str = "ollama"
     EMBEDDING_BACKEND: str = "ollama"
 
@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_LLM_MODEL: str = "qwen2.5-coder"
     OLLAMA_EMBED_MODEL: str = "nomic-embed-text"
+
+    # Gemini Config
+    GEMINI_API_KEY: str = ""
+    GEMINI_LLM_MODEL: str = "gemini-2.5-flash"
 
     # OpenAI / Claude Config
     OPENAI_API_KEY: str = "sk-..."
