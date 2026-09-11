@@ -5,6 +5,7 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.providers.embedding.ollama_embed import OllamaEmbedding
 from app.providers.embedding.openai_embed import OpenAIEmbedding
+from app.providers.llm.gemini_llm import GeminiLLM
 from app.providers.llm.ollama_llm import OllamaLLM
 from app.providers.llm.openai_llm import OpenAILLM
 from app.providers.vector_store.chroma_store import ChromaVectorStore
@@ -16,6 +17,10 @@ def get_llm():
     if settings.LLM_BACKEND == "ollama":
         return OllamaLLM(
             base_url=settings.OLLAMA_BASE_URL, model=settings.OLLAMA_LLM_MODEL
+        )
+    if settings.LLM_BACKEND == "gemini":
+        return GeminiLLM(
+            api_key=settings.GEMINI_API_KEY, model=settings.GEMINI_LLM_MODEL
         )
     return OpenAILLM(
         api_key=settings.OPENAI_API_KEY,
